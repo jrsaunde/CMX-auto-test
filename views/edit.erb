@@ -1,0 +1,12 @@
+<% if @test %>
+  <form action="/<%= @test.id %>" method="post" id="edit">
+    <input type="hidden" name="_method" value="put">
+    <textarea name="name"><%=h @test.name %></textarea>
+    <textarea name="case"><%=h @test.case %></textarea>
+    <textarea name="validator"><%=h @test.validator %></textarea>
+    <input type="submit">
+  </form>
+  <p><a href="/<%= @test.id %>/delete">Delete</a></p>
+<% else %>
+  <p>Test not found.</p>
+<% end %>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<link href="/rss.xml" rel="alternate" type="application/rss+xml">
+<head>
+  <meta charset="utf8">
+  <title><%= "#{@title} | #{SITE_TITLE}" %></title>
+  <link href="/reset.css" rel="stylesheet">
+  <link href="/style.css" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <hgroup>
+      <h1><a href="/"><%= SITE_TITLE %></a></h1>
+      <h2><%= SITE_DESCRIPTION %></h2>
+    </hgroup>
+  </header>
+ 
+  <div id="main">
+	<% if flash[:notice] %>
+    		<p class="notice"><%= flash[:notice] %>
+	<% end %>
+ 
+	<% if flash[:error] %>
+    		<p class="error"><%= flash[:error] %>
+	<% end %>
+    <%= yield %>
+  </div>
+ 
+  <footer>
+    <p><small>An app for <a href="http://meraki.cisco.com">Cisco Meraki Support</a>.</small></p>
+  </footer>
+</body>
+</html>

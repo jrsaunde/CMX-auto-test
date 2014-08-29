@@ -1,0 +1,10 @@
+<% if @test %>
+  <p>Are you sure you want to delete the test for Case# <em>"<%=h @test.case %>"</em>?</p>
+  <form action="/<%= @test.id %>" method="post">
+    <input type="hidden" name="_method" value="delete">
+    <input type="submit" value="Yes, Delete It!">
+    <a href="/<%= @test.id %>">Cancel</a>
+  </form>
+<% else %>
+  <p>Test not found.</p>
+<% end %>
