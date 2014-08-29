@@ -9,10 +9,10 @@ enable :sessions
 use Rack::Flash, :sweep => true
 
 SITE_TITLE = "CMX Testing"
-SITE_DESCRIPTION = "Jamies Automated CMX test server"
-SECRET = "Meraki123"
-HOSTNAME = "bannable.us"
-PORT = "12345"
+SITE_DESCRIPTION = "Automated CMX test server"
+SECRET = "ENTER"
+HOSTNAME = "ENTER_HOSTNAME"
+PORT = "ENTER_PORTNUMBER"
 
 DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/cmxtests.db")
 
