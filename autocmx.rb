@@ -6,6 +6,8 @@ require "sinatra/redirect_with_flash"
 require "json"
 
 enable :sessions
+set :session_secret, 'My Session Secret'
+
 use Rack::Flash, :sweep => true
 
 SITE_TITLE = "CMX Testing"
