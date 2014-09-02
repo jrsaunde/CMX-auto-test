@@ -4,15 +4,21 @@ require "data_mapper"
 require "rack-flash"
 require "sinatra/redirect_with_flash"
 require "json"
+require "yaml"
+
 
 enable :sessions
 use Rack::Flash, :sweep => true
 
+CONFIG = YAML.load_file("config.yml") unless defined? CONFIG
+
 SITE_TITLE = "CMX Testing"
 SITE_DESCRIPTION = "Automated CMX test server"
-SECRET = "ENTER"
-HOSTNAME = "ENTER_HOSTNAME"
-PORT = "ENTER_PORTNUMBER"
+SECRET = CONFIG['secret']
+HOSTNAME = CONFIG['hostname']
+PORT = CONFIG['port']
+
+puts "Setting up server at #{HOSTNAME}:#{PORT} with the SECRET #{SECRET}"
 
 DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/cmxtests.db")
 

@@ -1,0 +1,5 @@
+#Ignore config file
+config.yml
+
+#ignore current version of db
+cmxtests.db
