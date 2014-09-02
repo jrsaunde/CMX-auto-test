@@ -8,6 +8,8 @@ require "yaml"
 
 
 enable :sessions
+set :session_secret, 'My Session Secret'
+
 use Rack::Flash, :sweep => true
 
 CONFIG = YAML.load_file("config.yml") unless defined? CONFIG
