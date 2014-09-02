@@ -5,13 +5,12 @@ require "rack-flash"
 require "sinatra/redirect_with_flash"
 require "json"
 require "yaml"
-
+require "rack-google-analytics"
 
 enable :sessions
 set :session_secret, 'My Session Secret'
 
 use Rack::Flash, :sweep => true
-
 CONFIG = YAML.load_file("config.yml") unless defined? CONFIG
 
 SITE_TITLE = "CMX Testing"
@@ -19,6 +18,9 @@ SITE_DESCRIPTION = "Automated CMX test server"
 SECRET = CONFIG['secret']
 HOSTNAME = CONFIG['hostname']
 PORT = CONFIG['port']
+
+
+use Rack::GoogleAnalytics, :tracker => CONFIG['tracker']
 
 puts "Setting up server at #{HOSTNAME}:#{PORT} with the SECRET #{SECRET}"
 

@@ -1,3 +1,4 @@
 hostname: ENTER_HOSTNAME
 port: PORT
 secret: SECRET
+tracker: UA-00000000-0
