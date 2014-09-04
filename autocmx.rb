@@ -8,7 +8,6 @@ require "yaml"
 require "rack-google-analytics"
 
 enable :sessions
-set :session_secret, 'My Session Secret'
 
 use Rack::Flash, :sweep => true
 CONFIG = YAML.load_file("config.yml") unless defined? CONFIG
@@ -19,6 +18,7 @@ SECRET = CONFIG['secret']
 HOSTNAME = CONFIG['hostname']
 PORT = CONFIG['port']
 
+set :session_secret, CONFIG['session_secret']
 
 use Rack::GoogleAnalytics, :tracker => CONFIG['tracker']
 

@@ -2,3 +2,4 @@ hostname: ENTER_HOSTNAME
 port: PORT
 secret: SECRET
 tracker: UA-00000000-0
+session_secret: HTTP_SESSION_TOKEN
