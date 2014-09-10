@@ -24,7 +24,11 @@ use Rack::GoogleAnalytics, :tracker => CONFIG['tracker']
 
 puts "Setting up server at #{HOSTNAME}:#{PORT} with the SECRET #{SECRET}"
 
-DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/cmxtests.db")
+if (CONFIG['db_driver'])
+	DataMapper::setup(:default, CONFIG['db_driver'])
+else
+	DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/cmxtests.db")
+end
 
 class Test
 	include DataMapper::Resource
