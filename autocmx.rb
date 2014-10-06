@@ -153,6 +153,7 @@ post "/" do
 	n.validator = params[:content]
 	n.name = params[:name]
 	n.case = params[:case]
+	n.complete = false
 	n.push_url = "http://#{HOSTNAME}:#{PORT}/data/"
 	if n.save
 		redirect "/", :notice => 'Test created successfully.'

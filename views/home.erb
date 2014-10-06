@@ -23,7 +23,7 @@
   </tr>
 
 <% @tests.each do |test| %>
-  <tr class=<%=h test.complete %>>
+  <tr class=<%=h test[:complete] %>>
 	<td><span><a href="/<%=h test[:id] %>/edit"><%=h test[:id] %></a></span></td>
 	<td><%=h test[:case] %></td>
 	<td><%=h test[:name] %></td>
