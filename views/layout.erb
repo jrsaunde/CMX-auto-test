@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-<link href="/rss.xml" rel="alternate" type="application/rss+xml">
 <head>
   <meta charset="utf8">
   <title><%= "#{@title} | #{SITE_TITLE}" %></title>
@@ -8,6 +7,17 @@
   <link href="/style.css" rel="stylesheet">
 </head>
 <body>
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.css">
+  
+<!-- jQuery -->
+<script type="text/javascript" charset="utf8" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+  
+<!-- DataTables -->
+<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.js"></script>
+<script> $(document).ready( function () {                                                                                                                                                                    
+  $('#all_tests').DataTable();                                                                                                                                                                      
+} );  </script>
   <header>
     <hgroup>
       <h1><a href="/"><%= SITE_TITLE %></a></h1>

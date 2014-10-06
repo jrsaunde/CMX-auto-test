@@ -1,6 +1,6 @@
 body {
-    margin: 35px auto;
-    width: 640px;
+    margin: auto 25px;
+    width: auto;
 }
  
 header {
@@ -29,6 +29,7 @@ header h2 {
 }
  
 #add {
+    text-align: center;
     margin: 0 0 20px;
 }
  
@@ -42,7 +43,6 @@ header h2 {
 #add input {
     height: 50px;
     width: 100px;
-    margin: -50px 0 0;
     border: 1px solid #ddd;
     background: white;
 }
