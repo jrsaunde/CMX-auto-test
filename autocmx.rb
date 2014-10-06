@@ -1,6 +1,6 @@
 require "rubygems"
 require "sinatra"
-require "data_mapper"
+require "sequel"
 require "rack-flash"
 require "sinatra/redirect_with_flash"
 require "json"
@@ -24,100 +24,121 @@ use Rack::GoogleAnalytics, :tracker => CONFIG['tracker']
 
 puts "Setting up server at #{HOSTNAME}:#{PORT} with the SECRET #{SECRET}"
 
+if (PORT)
+	set :port, PORT
+end
+if (CONFIG['bind'])
+	set :bind, CONFIG['bind']
+end
 if (CONFIG['db_driver'])
-	DataMapper::setup(:default, CONFIG['db_driver'])
+	DB = Sequel.connect(CONFIG['db_driver'])
 else
-	DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/cmxtests.db")
+	DB = Sequel.connect("sqlite://#{Dir.pwd}/cmxtests.db")
 end
 
-class Test
-	include DataMapper::Resource
-	property :id, Serial
-	property :name, Text, :required=> true
-	property :case, Text, :required=> true
-	property :secret, Text
-	property :api, Integer
-	property :push_url, Text
-	property :validator, Text, :required=> true
-	property :complete, Boolean, :required => true, :default => false
-	property :created_at, DateTime
-	property :updated_at, DateTime
-	property :data_at, DateTime
+DB.create_table? :tests do
+	primary_key :id
+	String :name, :text => true, :null => false
+	String :case, :null => false
+	String :secret
+	Float :api
+	String :push_url
+	String :validator, :null => false
+	Boolean :complete, :default => false
+	DateTime :created_at
+	DateTime :updated_at
+	DateTime :data_at
 end
 
-DataMapper.finalize.auto_upgrade!
+Sequel::Model.plugin :validation_helpers
+
+class Test < Sequel::Model
+	def validate
+		super
+		validates_presence [:name, :case, :validator, :complete, :secret]
+		validates_max_length 30, :name
+		validates_max_length 20, :case
+	end
+
+	def before_create
+		self.created_at = Time.now
+		super
+	end
+
+	def before_save
+		self.updated_at = Time.now
+		super
+	end
+end
 
 helpers do
 	include Rack::Utils
 	alias_method :h, :escape_html
 end
 
-# RSS Feeds 
-get "/rss.xml" do
-	@tests = Test.all :order => :id.desc
-	builder :rss
-end
-
 # List all Tests
 get "/list" do
-        @tests = Test.all :order => :id.desc
-        @title = "All Tests"
-        if @tests.empty?
-                flash[:error] = "No pending tests found."
-        end
-        erb :list
+	@tests = DB[:tests]
+	@title = "All Tests"
+	if @tests.empty?
+		flash[:error] = "No tests found."
+	end
+	erb :list
 end
 
 #Test
 get "/data/:id" do
-        @test = Test.get params[:id]
-        if @test
-                @test.validator
-        else
-                redirect "/", :error => "Can't find that test."
-        end
+	@test = Test.first(:id => params[:id])
+	if @test
+		@test.validator
+	else
+		redirect "/", :error => "Can't find that test."
+	end
 end
 
 #Recieve data
 post "/data/:id" do
-  n = Test.get params[:id]
-  if n
-	  if request.media_type == "application/json"
-    		request.body.rewind
-    		map = JSON.parse(request.body.read)
-  	  else
-    		map = JSON.parse(params['data'])
-  	  end
-  	  if map == nil
-    	  	request.body.rewind
-    		logger.warn "Could not parse POST body #{request.body.read}"
-    	  	return
-  	  end
-  	  if map['secret'] != SECRET
-    		logger.warn "#{params[:id]} Got post with bad secret: #{map['secret']}"
-    		return
-  	  end
-  	  logger.info "Version is #{map['version']}"
-  	  #@test = Test.get params[:id]
-  	  if map['version'] == '1.0'
-		n.api = 1
-    		data = map['probing'].to_s
-  	  else
-		n.api = 2
-    		data = map['data'].to_s
-  	  end
-  	  logger.info "Post data are (First 1000 characters): #{data[0, 999]}#"
-	  n.data_at = Time.now
-	  n.complete = true
-	  n.save
-  else
-          logger.info "Received data for test #{params[:id]} but don't have that configured"
-  end
+	n = Test.first(:id => params[:id])
+	if n
+		if request.media_type == "application/json"
+			request.body.rewind
+			map = JSON.parse(request.body.read)
+		else
+			map = JSON.parse(params['data'])
+		end
+		if map == nil
+			request.body.rewind
+			logger.warn "Could not parse POST body #{request.body.read}"
+			return
+		end
+		if map['secret'] != SECRET
+			logger.warn "#{params[:id]} Got post with bad secret: #{map['secret']}"
+			return
+		end
+		logger.info "Version is #{map['version']}"
+
+		if map['version'] == '1.0'
+			n.api = 1.0
+			data = map['probing'].to_s
+		elsif map['version'] == '2.0'
+			n.api = 2.0
+			data = map['data'].to_s
+		else
+			logger.warn "#{params[:id]} Got post with unknown API version: #{map['version']}"
+			return
+		end
+		logger.info "Post data are (First 100 characters): #{data[0, 99]}#"
+		n.data_at = Time.now
+		n.complete = true
+		n.save
+	else
+		logger.info "Received data for test #{params[:id]}, but don't have that configured"
+	end
 end
 
 # Home Page
 get "/" do 
-	@tests = Test.all :order => :id.desc
+	@tests = DB[:tests]
 	@title = "All Tests"
 	if @tests.empty?
 		flash[:error] = "No pending tests found. Add your first below."
@@ -128,13 +149,11 @@ end
 # Post a test
 post "/" do
 	n = Test.new
-	n.secret = "Meraki123"
+	n.secret = params[:secret] ? params[:secret] : SECRET
 	n.validator = params[:content]
 	n.name = params[:name]
 	n.case = params[:case]
 	n.push_url = "http://#{HOSTNAME}:#{PORT}/data/"
-	n.created_at = Time.now
-	n.updated_at = Time.now
 	if n.save
 		redirect "/", :notice => 'Test created successfully.'
 	else
@@ -143,8 +162,8 @@ post "/" do
 end
 
 # Edit a test -- get
-get "/:id" do 
-	@test = Test.get params[:id]
+get "/:id/edit" do 
+	@test = Test.first(:id => params[:id])
 	@title = "Edit test ##{params[:id]}"
 	if @test
 		erb :edit
@@ -154,8 +173,8 @@ get "/:id" do
 end
 
 # Edit a test -- post
-put "/:id" do
-	n = Test.get params[:id]
+put "/:id/edit" do
+	n = Test.first(:id => params[:id])
 	unless n
 		redirect "/", :error => "Can't find that test."
 	end
@@ -171,7 +190,7 @@ end
 
 # Delete a test -- get
 get "/:id/delete" do
-	@test = Test.get params[:id]
+	@test = Test.first(:id => params[:id])
 	@title = "Confirm deletion of test ##{params[:id]}"
 	if @test
 		erb :delete
@@ -182,7 +201,7 @@ end
 
 # Delete a test -- delete
 delete "/:id" do 
-	n = Test.get params[:id]
+	n = Test.first(:id => params[:id])
 	if n.destroy
 		redirect "/", :notice => "Test deleted successfully."
 	else
@@ -192,7 +211,7 @@ end
 
 # Mark a Test complete -- get
 get "/:id/complete" do
-	n = Test.get params[:id]
+	n = Test.first(:id => params[:id])
 	unless n
 		redirect "/", :error => "Can't find that test."
 	end

@@ -3,7 +3,7 @@
   <form action="/<%= @test.id %>" method="post">
     <input type="hidden" name="_method" value="delete">
     <input type="submit" value="Yes, Delete It!">
-    <a href="/<%= @test.id %>">Cancel</a>
+    <a href="/<%= @test.id %>/edit">Cancel</a>
   </form>
 <% else %>
   <p>Test not found.</p>

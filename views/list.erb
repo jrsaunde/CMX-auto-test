@@ -1,13 +1,13 @@
 
 <% @tests.each do |test| %>
-  <article <%= 'class="complete"' if test.complete %>>
+  <article <%= 'class="complete"' if test[:complete] %>>
     <p>
-      Test for Case#<%=h test.case %> from <%=h test.name %> is using API version <%=h test.api %>, validator is <%=h test.validator %>
-      <span><a href="/<%= test.id %>">[edit]</a></span>
+      Test for Case#<%=h test[:case] %> from <%=h test[:name] %> is using API version <%=h test[:api] %>, validator is <%=h test[:validator] %>
+      <span><a href="/<%= test[:id] %>/edit">[edit]</a></span>
     </p>
     <p class="links">
-      <a href="/<%= test.id %>/complete">&#8623;</a>
+      <a href="/<%= test[:id] %>/complete">&#8623;</a>
     </p>
-    <p class="meta">Created: <%= test.created_at %> by <%= test.name %></p>
+    <p class="meta">Created: <%= test[:created_at] %> by <%= test[:name] %></p>
   </article>
 <% end %>
