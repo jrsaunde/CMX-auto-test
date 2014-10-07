@@ -32,16 +32,14 @@ To install you will need ruby. If you do not have ruby, please follow this link 
 Gems needed:
 * sinatra
 * sinatra-redirect-with-flash
-* datamapper
+* sequel
 * rack-flash3
 * json
-* sqlite3
-* dm-sqlite-adapter 
 * rack-google-analytics
 
 You can install all of these with the following command:
 ```
-gem install sinatra sinatra-redirect-with-flash datamapper rack-flash3 json sqlite3 dm-sqlite-adapter rack-google-analytics
+gem install sinatra sinatra-redirect-with-flash sequel rack-flash3 json rack-google-analytics
 ```
 
 
@@ -57,7 +55,7 @@ Setting up a Server
   4. Enter a http session token
 4. To start the server, run the following command, substituting the IP address and port number you want to use:
 ```
-ruby autocmx.rb -o <IP_ADDRESS> -p <PORT_NUMBER>
+ruby autocmx.rb
 ```
 
 How to use
