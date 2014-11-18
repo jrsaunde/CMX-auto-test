@@ -174,11 +174,14 @@ get "/:id/edit" do
 end
 
 # Edit a test -- post
-put "/:id/edit" do
+post "/:id/edit" do
 	n = Test.first(:id => params[:id])
 	unless n
 		redirect "/", :error => "Can't find that test."
 	end
+	n.name = params[:name]
+	n.case = params[:case]
+	n.secret = params[:secret]
 	n.validator = params[:validator]
 	n.complete = params[:complete] ? 1 : 0
 	n.updated_at = Time.now
