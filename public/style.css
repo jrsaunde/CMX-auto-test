@@ -1,114 +1,114 @@
 body {
-    margin: auto 25px;
-    width: auto;
+	margin: auto 25px;
+	width: auto;
 }
  
 header {
-    text-align: center;
-    margin: 0 0 20px;
+	text-align: center;
+	margin: 0 0 20px;
 }
  
 header h1 {
-    display: inline;
-    font-size: 32px;
+	display: inline;
+	font-size: 32px;
 }
  
 header h1 a:link, header h1 a:visited {
-    color: #444;
-    text-decoration: none;
+	color: #444;
+	text-decoration: none;
 }
  
 header h2 {
-    font-size: 16px;
-    font-style: italic;
-    color: #999;
+	font-size: 16px;
+	font-style: italic;
+	color: #999;
 }
  
 #main {
-    margin: 0 0 20px;
+	margin: 0 0 20px;
 }
  
 #add {
-    text-align: center;
-    margin: 0 0 20px;
+	text-align: center;
+	margin: 0 0 20px;
 }
  
 #add textarea {
-    height: 30px;
-    width: 510px;
-    padding: 10px;
-    border: 1px solid #ddd;
+	height: 30px;
+	width: 510px;
+	padding: 10px;
+	border: 1px solid #ddd;
 }
  
 #add input {
-    height: 50px;
-    width: 100px;
-    border: 1px solid #ddd;
-    background: white;
+	height: 50px;
+	width: 100px;
+	border: 1px solid #ddd;
+	background: white;
 }
  
 #edit textarea {
-    height: 30px;
-    width: 480px;
-    padding: 10px;
-    border: 1px solid #ddd;
+	height: 30px;
+	width: 480px;
+	padding: 10px;
+	border: 1px solid #ddd;
 }
  
 #edit input[type=submit] {
-    height: 50px;
-    width: 100px;
-    margin: -50px 0 0;
-    border: 1px solid #ddd;
-    background: white;
+	height: 50px;
+	width: 100px;
+	margin: -50px 0 0;
+	border: 1px solid #ddd;
+	background: white;
 }
  
 #edit input[type=checkbox] {
-    height: 50px;
-    width: 20px;
+	height: 50px;
+	width: 20px;
 }
  
 article {
-    border: 1px solid #eee;
-    border-top: none;
-    padding: 15px 10px;
+	border: 1px solid #eee;
+	border-top: none;
+	padding: 15px 10px;
 }
  
 article:first-of-type {
-    border: 1px solid #eee;
+	border: 1px solid #eee;
 }
  
 article:nth-child(even) {
-    background: #fafafa;
+	background: #fafafa;
 }
- 
+
 article.complete {
-    background: #fedae3;
+	background: #fedae3;
 }
  
 article span {
-    font-size: 0.8em;
+	font-size: 0.8em;
 }
  
 p {
-    margin: 0 0 5px;
+	margin: 0 0 5px;
 }
  
 .meta {
-    font-size: 0.8em;
-    font-style: italic;
-    color: #888;
+	font-size: 0.8em;
+	font-style: italic;
+	color: #888;
 }
  
 .links {
-    font-size: 1.8em;
-    line-height: 0.8em;
-    float: right;
-    margin: -10px 0 0;
+	font-size: 1.8em;
+	line-height: 0.8em;
+	float: right;
+	margin: -10px 0 0;
 }
  
 .links a {
-    display: block;
-    text-decoration: none;
+	display: block;
+	text-decoration: none;
 }
 .notice{ color: green;}
 .error{ color: red;}
@@ -120,11 +120,26 @@ padding:15px;
 border-spacing:5px;
 border: 1px solid black;
 }
-tr.false td{
+tr.no_data_received td{
 	color: #000000;
 	background-color: #AAAAAA;
 }
-tr.true td{
+tr.complete td{
 	color: #000000;
 	background-color: #00CC00;
 }
+tr.bad_post {
+	background-color: #FF4747;
+	color: #000000;
+}
+
+tr.bad_api {
+	background-color: #FFFF66;
+	color: #000000;
+}
+
+tr.bad_secret {
+	background-color: #FF66FF;
+	color: #000000;
+}
+

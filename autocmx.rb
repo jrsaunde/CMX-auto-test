@@ -48,6 +48,7 @@ DB.create_table? :tests do
 	DateTime :created_at
 	DateTime :updated_at
 	DateTime :data_at
+	String :state, :text => true
 end
 
 Sequel::Model.plugin :validation_helpers
@@ -100,6 +101,7 @@ end
 post "/data/:id" do
 	n = Test.first(:id => params[:id])
 	if n
+		n.data_at = Time.now
 		if request.media_type == "application/json"
 			request.body.rewind
 			map = JSON.parse(request.body.read)
@@ -109,10 +111,14 @@ post "/data/:id" do
 		if map == nil
 			request.body.rewind
 			logger.warn "Could not parse POST body #{request.body.read}"
+			n.state = "bad_post"
+			n.save
 			return
 		end
 		if map['secret'] != SECRET
 			logger.warn "#{params[:id]} Got post with bad secret: #{map['secret']}"
+			n.state = "bad_secret"
+			n.save
 			return
 		end
 		logger.info "Version is #{map['version']}"
@@ -125,10 +131,13 @@ post "/data/:id" do
 			data = map['data'].to_s
 		else
 			logger.warn "#{params[:id]} Got post with unknown API version: #{map['version']}"
+			n.api = map['version']
+			n.state = "bad_api"
+			n.save
 			return
 		end
 		logger.info "Post data are (First 100 characters): #{data[0, 99]}#"
-		n.data_at = Time.now
+		n.state = "complete"
 		n.complete = true
 		n.save
 	else
@@ -155,6 +164,7 @@ post "/" do
 	n.case = params[:case]
 	n.complete = false
 	n.push_url = "http://#{HOSTNAME}:#{PORT}/data/"
+	n.state = "no_data_received"
 	if n.save
 		redirect "/", :notice => 'Test created successfully.'
 	else
@@ -184,6 +194,7 @@ post "/:id/edit" do
 	n.secret = params[:secret]
 	n.validator = params[:validator]
 	n.complete = params[:complete] ? 1 : 0
+	n.state = "no_data_received"
 	n.updated_at = Time.now
 	if n.save
 		redirect "/", :notice => "Test updated successfully."
@@ -219,6 +230,7 @@ get "/:id/complete" do
 	unless n
 		redirect "/", :error => "Can't find that test."
 	end
+	n.state = "complete"
 	n.complete = n.complete ? 0 : 1 #flip it
 	n.updated_at = Time.now
 	if n.save
