@@ -128,17 +128,17 @@ tr.complete td{
 	color: #000000;
 	background-color: #00CC00;
 }
-tr.bad_post {
+tr.bad_post td{
 	background-color: #FF4747;
 	color: #000000;
 }
 
-tr.bad_api {
+tr.bad_api td{
 	background-color: #FFFF66;
 	color: #000000;
 }
 
-tr.bad_secret {
+tr.bad_secret td{
 	background-color: #FF66FF;
 	color: #000000;
 }
