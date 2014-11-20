@@ -150,7 +150,7 @@ get "/" do
 	@tests = DB[:tests]
 	@title = "All Tests"
 	if @tests.empty?
-		flash[:error] = "No pending tests found. Add your first below."
+		flash[:notice] = "No pending tests found. Add your first below."
 	end
 	erb :home
 end
@@ -165,10 +165,13 @@ post "/" do
 	n.complete = false
 	n.push_url = "http://#{HOSTNAME}:#{PORT}/data/"
 	n.state = "no_data_received"
-	if n.save
-		redirect "/", :notice => 'Test created successfully.'
+  if n.valid?
+    n.save
+    flash[:notice] = "Test created successfully." 
+		redirect "/"
 	else
-		redirect "/", :error => 'Failed to save test.'
+		flash[:error] = "Unable to save test, please make sure you fill out all fields"
+    redirect "/"
 	end
 end
 
