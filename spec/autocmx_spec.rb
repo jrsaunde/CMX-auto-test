@@ -14,21 +14,25 @@ describe 'The AutoCMX App' do
 	end
 end
 
-describe 'Add tests' do
-	it "adds good test" do
-		post '/', {:name=>"Test User", :case=>"000000", :content=>"abc123"}
+describe 'When Adding tests' do
+	it "has a status code of 302 if test added successfully" do
+		post '/', {:name=>"Test User", :case=>"000000", :secret=>"test_secret", :content=>"abc123"}
 		expect(last_response.status).to eq 302
 	end
-	it "doesn't add only name" do
+	it "gives an error if test only has name" do
 		post '/', {:name=>"Test User, only name"}
 		expect(last_response).to_not be_ok
 	end
-	it "doesn't add only case" do
-		post '/', {:case=>"012345"}
+	it "gives an error if test only has a case" do
+		post '/', {:case=>"Test User, only case"}
 		expect(last_response).to_not be_ok
 	end
-	it "doesn't add only validator" do
-		post '/', {:content=>"abceasyas123"}
+  it "gives an error if test only has a secret" do 
+    post '/', {:secret=>"Test User, only secret"}
+    expect(last_response).to_not be_ok
+  end
+	it "gives an error if the test only has a validator" do
+		post '/', {:content=>"Test User, only validator"}
 		expect(last_response).to_not be_ok
 	end		
 end
