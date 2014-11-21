@@ -115,7 +115,7 @@ post "/data/:id" do
 			n.save
 			return
 		end
-		if map['secret'] != SECRET
+		if map['secret'] != n.secret
 			logger.warn "#{params[:id]} Got post with bad secret: #{map['secret']}"
 			n.state = "bad_secret"
 			n.save
