@@ -110,7 +110,7 @@ post "/data/:id" do
 		end
 		if map == nil
 			request.body.rewind
-			logger.warn "Could not parse POST body #{request.body.read}"
+			logger.warn "#{params[:id]} Could not parse POST body #{request.body.read}"
 			n.state = "bad_post"
 			n.save
 			return
@@ -136,7 +136,7 @@ post "/data/:id" do
 			n.save
 			return
 		end
-		logger.info "Post data are (First 100 characters): #{data[0, 99]}#"
+		logger.info "#{params[:id]} Post data are (First 100 characters): #{data[0, 99]}#"
 		n.state = "complete"
 		n.complete = true
 		n.save
