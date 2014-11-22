@@ -2,6 +2,10 @@ ENV['RACK_ENV'] = 'test'
 
 require 'spec_helper'
 
+#Test cases that actually affect db
+# 1. validation test
+# 2. input test
+
 describe 'The AutoCMX App' do
 	it "displays the home page" do
 		get '/'
@@ -44,8 +48,13 @@ describe 'When Adding tests' do
 	end		
 end
 
-describe 'Remove tests' do
-	it "delete test" do
-	end
+describe 'Removing tests - ' do
+  test_cases = [1, 2]
+  test_cases.each_with_index do | test|
+	  it "redirects when deleting test #{test}" do
+	    delete "/#{test}"
+      expect(last_response.status).to eq 302
+    end
+  end
 end
 
