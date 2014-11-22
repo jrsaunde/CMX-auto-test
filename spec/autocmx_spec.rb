@@ -12,7 +12,14 @@ describe 'The AutoCMX App' do
 		get '/'
 		expect(last_response.body).to include("CMX Testing")
 	end
+
+  it "validates correctly" do
+    post '/', {:name=>"validate_name", :case=>"validate_case", :secret=>"validate_secret", :content=>"validate_validator"}
+    get '/data/1'
+    expect(last_response.body).to include("validate_validator")
+  end
 end
+
 
 describe 'When Adding tests' do
 	it "has a status code of 302 if test added successfully" do
@@ -42,12 +49,3 @@ describe 'Remove tests' do
 	end
 end
 
-describe "Data" do
-	before :each do
-		post '/', {:name=>"Validate Test", :case=>"validate", :content=>"doesitvalidate"}
-	end
-	it "validates correctly" do
-		get '/data/1'
-		expect(last_response.body).to include("doesitvalidate")
-	end
-end
