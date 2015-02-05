@@ -3,3 +3,4 @@ port: PORT
 secret: SECRET
 tracker: UA-00000000-0
 session_secret: HTTP_SESSION_TOKEN
+log_file: 'cmx.log'

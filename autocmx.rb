@@ -6,6 +6,7 @@ require "sinatra/redirect_with_flash"
 require "json"
 require "yaml"
 require "rack-google-analytics"
+require "logger"
 
 enable :sessions
 
@@ -18,11 +19,16 @@ SECRET = CONFIG['secret']
 HOSTNAME = CONFIG['hostname']
 PORT = CONFIG['port']
 
+# Create a log file instead of just printing to output
+log = Logger.new(CONFIG['log_file'],5, 1024000)
+
+log.debug "This is a test"
 set :session_secret, CONFIG['session_secret']
 
 use Rack::GoogleAnalytics, :tracker => CONFIG['tracker']
 
 puts "Setting up server at #{HOSTNAME}:#{PORT} with the SECRET #{SECRET}"
+log.info("Server is set up at #{HOSTNAME}:#{PORT} with the SECRET=#{SECRET}")
 
 if (PORT)
 	set :port, PORT
@@ -111,12 +117,14 @@ post "/data/:id" do
 		if map == nil
 			request.body.rewind
 			logger.warn "#{params[:id]} Could not parse POST body #{request.body.read}"
+			log.warn("#{params[:id]} *** Could not parse POST body #{request.body.read}")
 			n.state = "bad_post"
 			n.save
 			return
 		end
 		if map['secret'] != n.secret
 			logger.warn "#{params[:id]} Got post with bad secret: #{map['secret']}"
+			log.warn("#{params[:id]} *** bad secret #{map['secret']}")
 			n.state = "bad_secret"
 			n.save
 			return
@@ -131,17 +139,20 @@ post "/data/:id" do
 			data = map['data'].to_s
 		else
 			logger.warn "#{params[:id]} Got post with unknown API version: #{map['version']}"
+			log.warn("#{params[:id]} *** Test #{params[:id]} -- Unknown API version: #{map['version']}")
 			n.api = map['version']
 			n.state = "bad_api"
 			n.save
 			return
 		end
 		logger.info "#{params[:id]} Post data are (First 100 characters): #{data[0, 99]}#"
+		log.info("#{params[:id]} Post data -- (First 100 characters): #{data[0, 99]}#")
 		n.state = "complete"
 		n.complete = true
 		n.save
 	else
 		logger.info "Received data for test #{params[:id]}, but don't have that configured"
+		log.error("***** Data recieved for unconfigured test #{params[:id]}")
 	end
 end
 
@@ -222,6 +233,7 @@ delete "/:id" do
 	n = Test.first(:id => params[:id])
 	if n.destroy
 		redirect "/", :notice => "Test deleted successfully."
+		log.info("Test #{:id} was deleted")
 	else
 		redirect "/", :error => "Error deleting Test."
 	end

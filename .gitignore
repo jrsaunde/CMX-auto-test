@@ -6,3 +6,6 @@ cmxtests.db
 
 #ignore vim swap files
 *.swp
+
+#ignore log files
+*.log
