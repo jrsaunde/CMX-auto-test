@@ -83,8 +83,21 @@ helpers do
 	alias_method :h, :escape_html
 end
 
+def authorized?
+  @auth ||= Rack::Auth::Basic::Request.new(request.env)
+  @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [CONFIG['login'], CONFIG['password']]
+end
+
+def protected!
+  unless authorized?
+    response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+    throw(:halt, [401, "You shall not pass.\n"])
+  end
+end
+
 # List all Tests
 get "/list" do
+  protected!
 	@tests = DB[:tests]
 	@title = "All Tests"
 	if @tests.empty?
@@ -158,6 +171,7 @@ end
 
 # Home Page
 get "/" do 
+  protected!
 	@tests = DB[:tests]
 	@title = "All Tests"
 	if @tests.empty?
@@ -168,6 +182,7 @@ end
 
 # Post a test
 post "/" do
+  protected!
 	n = Test.new
 	n.secret = params[:secret] ? params[:secret] : SECRET
 	n.validator = params[:content]
@@ -183,11 +198,12 @@ post "/" do
 	else
 		flash[:error] = "Unable to save test, please make sure you fill out all fields"
     redirect "/"
-	end
+  end
 end
 
 # Edit a test -- get
 get "/:id/edit" do 
+  protected!
 	@test = Test.first(:id => params[:id])
 	@title = "Edit test ##{params[:id]}"
 	if @test
@@ -199,6 +215,7 @@ end
 
 # Edit a test -- post
 post "/:id/edit" do
+  protected!
 	n = Test.first(:id => params[:id])
 	unless n
 		redirect "/", :error => "Can't find that test."
@@ -219,6 +236,7 @@ end
 
 # Delete a test -- get
 get "/:id/delete" do
+  protected!
 	@test = Test.first(:id => params[:id])
 	@title = "Confirm deletion of test ##{params[:id]}"
 	if @test
@@ -230,6 +248,7 @@ end
 
 # Delete a test -- delete
 delete "/:id" do 
+  protected!
 	n = Test.first(:id => params[:id])
 	if n.destroy
 		redirect "/", :notice => "Test deleted successfully."
@@ -241,6 +260,7 @@ end
 
 # Mark a Test complete -- get
 get "/:id/complete" do
+  protected!
 	n = Test.first(:id => params[:id])
 	unless n
 		redirect "/", :error => "Can't find that test."
